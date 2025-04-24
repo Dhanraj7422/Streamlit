@@ -69,11 +69,11 @@ position = 0
 atr_multiplier = 1.5
 
 for stock, data in all_data.items():
-     data['Signal'] = best_model.predict(
-    data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna().align(
-        data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna(), axis=0, copy=False)[0].values
-)
-   for i in range(len(data)):
+   data['Signal'] = best_model.predict(
+         data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna().align(
+             data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna(), axis=0, copy=False)[0].values
+     )
+     for i in range(len(data)):
     if not np.isnan(data['ATR'][i]) and not np.isnan(data['Close'][i]):
     if data['Signal'][i] == 1 and balance > 0:
      risk_amount = balance * (risk_per_trade / 100)
