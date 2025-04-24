@@ -73,18 +73,17 @@ for stock, data in all_data.items():
     data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna().align(
         data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna(), axis=0, copy=False)[0].values
 )
-    for i in range(len(data)):
-        if not np.isnan(data['ATR'][i]) and not np.isnan(data['Close'][i]):
-            if data['Signal'][i] == 1 and balance > 0:
-                risk_amount = balance * (risk_per_trade / 100)
-                position_size = risk_amount / (atr_multiplier * data['ATR'][i])
-                position = min(balance / data['Close'][i], position_size)
-                balance -= position * data['Close'][i]
-                stop_loss = data['Close'][i] - (atr_multiplier * data['ATR'][i])
-            elif position > 0 and (data['Close'][i] < stop_loss or data['Signal'][i] == -1):
-                balance += position * data['Close'][i]
-                position = 0
-
+   for i in range(len(data)):
+    if not np.isnan(data['ATR'][i]) and not np.isnan(data['Close'][i]):
+    if data['Signal'][i] == 1 and balance > 0:
+     risk_amount = balance * (risk_per_trade / 100)
+    position_size = risk_amount / (atr_multiplier * data['ATR'][i])
+    position = min(balance / data['Close'][i], position_size)
+    balance -= position * data['Close'][i]
+    stop_loss = data['Close'][i] - (atr_multiplier * data['ATR'][i])
+    elif position > 0 and (data['Close'][i] < stop_loss or data['Signal'][i] == -1):
+    balance += position * data['Close'][i]
+    position = 0
 # Final performance evaluation
 final_balance = balance if balance > 0 else position * data['Close'].fillna(0).iloc[-1]
 profit = final_balance - initial_balance
