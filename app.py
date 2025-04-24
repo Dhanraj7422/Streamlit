@@ -30,7 +30,8 @@ features, labels = [], []
 for stock, data in all_data.items():
     data['SMA20'] = data['Close'].rolling(window=20).mean()
     data['SMA50'] = data['Close'].rolling(window=50).mean()
-    mean().replace(0, np.nan)))))
+    data['RSI'] = 100 - (100 / (1 + (data['Close'].diff(1).clip(lower=0).rolling(window=14).mean() /
+                                     data['Close'].diff(1).clip(upper=0).abs().rolling(window=14).mean())))
     data['RSI'] = 100 - (100 / (1 + (data['Close'].diff(1).clip(lower=0).rolling(window=14).mean().align(
     data['Close'].diff(1).clip(upper=0).abs().rolling(window=14).mean(), axis=0, copy=False)[0])))
     data['ATR'] = data['High'].subtract(data['Low']).rolling(window=14).mean()
