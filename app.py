@@ -30,12 +30,19 @@ features, labels = [], []
 for stock, data in all_data.items():
     data['SMA20'] = data['Close'].rolling(window=20).mean()
     data['SMA50'] = data['Close'].rolling(window=50).mean()
-    data['RSI'] = 100 - (100 / (1 + ((data['Close'].diff(1).clip(lower=0).rolling(window=14).mean()) / 
-                                     (data['Close'].diff(1).clip(upper=0).abs().rolling(window=14).mean().replace(0, np.nan)))))
+    mean().replace(0, np.nan)))))
+    data['RSI'] = 100 - (100 / (1 + (data['Close'].diff(1).clip(lower=0).rolling(window=14).mean().align(
+    data['Close'].diff(1).clip(upper=0).abs().rolling(window=14).mean(), axis=0, copy=False)[0])))
     data['ATR'] = data['High'].subtract(data['Low']).rolling(window=14).mean()
     data['Volatility'] = data['Close'].pct_change().rolling(window=14).std()
-    data['Target'] = np.where((data['Close'] > data['SMA20']) & (data['RSI'] < 40), 1,
-                              np.where((data['Close'] < data['SMA50']) & (data['RSI'] > 70), -1, 0))
+    data['Target'] = np.where(
+    (data['Close'].align(data['SMA20'], axis=0, copy=False)[0] > data['SMA20']) &
+    (data['RSI'].align(data['Close'], axis=0, copy=False)[0] < 40), 1,
+    np.where(
+        (data['Close'].align(data['SMA50'], axis=0, copy=False)[0] < data['SMA50']) &
+        (data['RSI'].align(data['Close'], axis=0, copy=False)[0] > 70), -1, 0
+    )
+)
     data = data.dropna()
     features.extend(data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].values.tolist())
     labels.extend(data['Target'].values.tolist())
@@ -61,7 +68,10 @@ position = 0
 atr_multiplier = 1.5
 
 for stock, data in all_data.items():
-    data['Signal'] = best_model.predict(data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].values)
+data['Signal'] = best_model.predict(
+    data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna().align(
+        data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna(), axis=0, copy=False)[0].values
+)
     for i in range(len(data)):
         if not np.isnan(data['ATR'][i]) and not np.isnan(data['Close'][i]):
             if data['Signal'][i] == 1 and balance > 0:
