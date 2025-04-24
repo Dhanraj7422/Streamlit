@@ -33,8 +33,7 @@ for stock, data in all_data.items():
     data['Target'] = np.where((data['Close'] > data['SMA20']) & (data['RSI'] < 40), 1,
                               np.where((data['Close'] < data['SMA50']) & (data['RSI'] > 70), -1, 0))
     data = data.dropna()
-    features.extend(data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].values.tolist())
-    labels.extend(data['Target'].values.tolist())
+    features.extend(data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].values)
 
 # Hyperparameter tuning
 param_grid = {'n_estimators': [100, 200, 300], 'max_depth': [10, 20, 30], 'min_samples_split': [2, 5, 10]}
