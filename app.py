@@ -69,7 +69,7 @@ position = 0
 atr_multiplier = 1.5
 
 for stock, data in all_data.items():
-data['Signal'] = best_model.predict(
+     data['Signal'] = best_model.predict(
     data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna().align(
         data[['Close', 'SMA20', 'SMA50', 'RSI', 'ATR', 'Volatility']].dropna(), axis=0, copy=False)[0].values
 )
